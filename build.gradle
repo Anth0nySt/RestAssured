@@ -45,8 +45,10 @@ tasks.withType(Test) {
     }
 }
 
-test {
-    useJUnitPlatform()
+task propertiesTest(type: Test) {
+    useJUnitPlatform {
+        includeTags("forJenkins")
+    }
 }
 
 

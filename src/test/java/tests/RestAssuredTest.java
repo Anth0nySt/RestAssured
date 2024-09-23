@@ -3,6 +3,7 @@ package tests;
 import io.qameta.allure.restassured.AllureRestAssured;
 import models.LoginBody;
 import models.ResponseBody;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
 import static io.qameta.allure.Allure.step;
@@ -12,7 +13,7 @@ import static specs.LoginSpecs.*;
 
 public class RestAssuredTest extends TestBase {
 
-
+    @Tag("forJenkins")
     @Test
     void checkSingleResource() {
         given()
