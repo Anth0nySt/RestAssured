@@ -1,55 +1,63 @@
 package tests;
 
+import io.qameta.allure.restassured.AllureRestAssured;
+import models.LoginBody;
+import models.ResponseBody;
 import org.junit.jupiter.api.Test;
 
+import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
-import static io.restassured.http.ContentType.JSON;
-import static org.hamcrest.Matchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static specs.LoginSpecs.*;
 
-public class RestAssuredTest {
+public class RestAssuredTest extends TestBase {
+
 
     @Test
     void checkSingleResource() {
         given()
+                .spec(RegRequestSpec)
                 .when()
-                .log().uri()
-                .get("https://reqres.in/api/unknown/2")
+                .get("/unknown/2")
                 .then()
-                .log().body()
-                .body("data", is(notNullValue()))
-                .body("data.id", is(2))
-                .body("data.name", is("fuchsia rose"));
+                .spec(RegResponseSpec);
 
     }
 
     @Test
     void checkSingleUserNotFound() {
         given()
+                .spec(RegRequestSpec)
                 .when()
-                .log().uri()
-                .get("https://reqres.in/api/users/23")
+                .get("/users/23")
                 .then()
-                .log().status()
+                .spec(BadResponseSpec)
                 .statusCode(404);
+
     }
 
     @Test
     void checkRegistration() {
-        String regData = "{\"email\": \"eve.holt@reqres.in\", \"password\": \"pistol\"}";
 
-        given()
-                .when()
-                .body(regData)
-                .contentType(JSON)
-                .log().uri()
-                .post("https://reqres.in/api/register")
-                .then()
-                .log().status()
-                .statusCode(200)
-                .body("id", is(4))
-                .body("token", is("QpwL5tke4Pnpja7X4"));
+        LoginBody regData = new LoginBody();
+        regData.setEmail("eve.holt@reqres.in");
+        regData.setPassword("pistol");
 
+        ResponseBody responseData = step("Registration", () ->
+                given()
+                        .filter(new AllureRestAssured())
+                        .spec(RegRequestSpec)
+                        .body(regData)
+                        .when()
+                        .post("/register")
+                        .then()
+                        .spec(RegResponseSpec)
+                        .extract().as(ResponseBody.class));
+        step("Success registration", () ->
+                assertEquals("QpwL5tke4Pnpja7X4", responseData.getToken()));
+        assertEquals("4", responseData.getId());
     }
+
 
     @Test
     void checkUpdateUserInfo() {
@@ -58,12 +66,10 @@ public class RestAssuredTest {
         given()
                 .when()
                 .body(userInfo)
-                .contentType(JSON)
-                .log().uri()
-                .post("https://reqres.in/api/users/2")
+                .spec(RegRequestSpec)
+                .post("/users/2")
                 .then()
-                .log().status()
-                .statusCode(201);
+                .spec(UpdResponseSpec);
     }
 
     @Test
@@ -73,11 +79,9 @@ public class RestAssuredTest {
         given()
                 .when()
                 .body(userInfo)
-                .contentType(JSON)
-                .log().uri()
-                .delete("https://reqres.in/api/users/2")
+                .spec(RegRequestSpec)
+                .delete("users/2")
                 .then()
-                .log().status()
-                .statusCode(204);
+                .spec(DeleteResponseSpec);
     }
 }
