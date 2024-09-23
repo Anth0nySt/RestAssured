@@ -11,9 +11,9 @@ import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static specs.LoginSpecs.*;
 
+@Tag("forJenkins")
 public class RestAssuredTest extends TestBase {
 
-    @Tag("forJenkins")
     @Test
     void checkSingleResource() {
         given()
