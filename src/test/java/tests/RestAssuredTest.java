@@ -74,9 +74,10 @@ public class RestAssuredTest extends TestBase {
 
         CreateResponseBody response = step("Update user info", () ->
                 given()
-                        .when()
+                        .filter(new AllureRestAssured())
                         .body(userinfo)
                         .spec(RegRequestSpec201)
+                        .when()
                         .post("/users")
                         .then()
                         .spec(UpdResponseSpec201)
