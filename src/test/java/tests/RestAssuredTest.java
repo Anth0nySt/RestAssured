@@ -21,6 +21,7 @@ public class RestAssuredTest extends TestBase {
     @Test
     void checkSingleResourceTest() {
         given()
+                .filter(new AllureRestAssured())
                 .spec(RegRequestSpec200)
                 .when()
                 .get("/unknown/2")
@@ -32,6 +33,7 @@ public class RestAssuredTest extends TestBase {
     @Test
     void checkSingleUserNotFoundTest() {
         given()
+                .filter(new AllureRestAssured())
                 .spec(RegRequestSpec200)
                 .when()
                 .get("/users/23")
@@ -95,6 +97,7 @@ public class RestAssuredTest extends TestBase {
         String userInfo = "";
 
         given()
+                .filter(new AllureRestAssured())
                 .when()
                 .body(userInfo)
                 .spec(RegRequestSpec200)
