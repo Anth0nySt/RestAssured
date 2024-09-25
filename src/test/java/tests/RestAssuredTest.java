@@ -1,6 +1,5 @@
 package tests;
 
-import io.qameta.allure.restassured.AllureRestAssured;
 import models.CreateBody;
 import models.CreateResponseBody;
 import models.LoginBody;
@@ -8,9 +7,11 @@ import models.ResponseBody;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 
+import static helpers.CustomAllureListener.withCustomTemplates;
 import static io.qameta.allure.Allure.step;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static specs.LoginSpecs.*;
@@ -21,25 +22,25 @@ public class RestAssuredTest extends TestBase {
     @Test
     void checkSingleResourceTest() {
         given()
-                .filter(new AllureRestAssured())
+                .filter(withCustomTemplates())
                 .spec(RegRequestSpec200)
                 .when()
                 .get("/unknown/2")
                 .then()
-                .spec(RegResponseSpec200);
+                .spec(RegResponseSpec200)
+                .body("data", is(notNullValue()));
 
     }
 
     @Test
     void checkSingleUserNotFoundTest() {
         given()
-                .filter(new AllureRestAssured())
+                .filter(withCustomTemplates())
                 .spec(RegRequestSpec200)
                 .when()
                 .get("/users/23")
                 .then()
-                .spec(BadResponseSpec404)
-                .statusCode(404);
+                .spec(BadResponseSpec404);
 
     }
 
@@ -52,7 +53,7 @@ public class RestAssuredTest extends TestBase {
 
         ResponseBody responseData = step("Registration", () ->
                 given()
-                        .filter(new AllureRestAssured())
+                        .filter(withCustomTemplates())
                         .spec(RegRequestSpec200)
                         .body(regData)
                         .when()
@@ -76,9 +77,9 @@ public class RestAssuredTest extends TestBase {
 
         CreateResponseBody response = step("Update user info", () ->
                 given()
-                        .filter(new AllureRestAssured())
+                        .filter(withCustomTemplates())
                         .body(userinfo)
-                        .spec(RegRequestSpec201)
+                        .spec(RegRequestSpec200)
                         .when()
                         .post("/users")
                         .then()
@@ -97,7 +98,7 @@ public class RestAssuredTest extends TestBase {
         String userInfo = "";
 
         given()
-                .filter(new AllureRestAssured())
+                .filter(withCustomTemplates())
                 .when()
                 .body(userInfo)
                 .spec(RegRequestSpec200)
